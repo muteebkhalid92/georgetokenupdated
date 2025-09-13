@@ -82,7 +82,19 @@ async function connectWallet() {
   try {
     const instance = await web3Modal.connect();
     console.log("Wallet instance:", instance);
-    provider = new window.ethers.providers.Web3Provider(instance);
+
+    // Check if instance has request method (EIP-1193 provider)
+    if (typeof instance.request === "function") {
+      provider = new window.ethers.providers.Web3Provider(instance);
+    } else if (instance.provider) {
+      // Some wallets return an object with provider property
+      provider = new window.ethers.providers.Web3Provider(instance.provider);
+    } else {
+      // Fallback: use JsonRpcProvider for BSC
+      console.warn("Using fallback JsonRpcProvider for BSC");
+      provider = new window.ethers.providers.JsonRpcProvider("https://bsc-dataseed.binance.org/");
+    }
+
     signer = provider.getSigner();
     selectedAccount = await signer.getAddress();
     console.log("Selected account:", selectedAccount);
@@ -142,7 +154,7 @@ async function connectWallet() {
         console.log("accountsChanged event triggered with accounts:", accounts);
         if (accounts.length === 0) {
           await disconnectWallet();
-        } else {
+        } else if (accounts[0] !== selectedAccount) {
           selectedAccount = accounts[0];
           const walletAddressDisplay = document.getElementById("walletAddressDisplay");
           if (walletAddressDisplay) {
@@ -279,6 +291,40 @@ async function buyTokens() {
   }
 }
 
+async function disconnectWallet() {
+  if (provider && provider.close) {
+    await provider.close();
+  }
+  web3Modal.clearCachedProvider();
+  selectedAccount = null;
+  bnbBalance = null;
+  // Reset UI
+  const connectWalletBtn = document.getElementById("connectWalletBtn");
+  if (connectWalletBtn) {
+    connectWalletBtn.style.display = "block";
+    connectWalletBtn.disabled = false;
+    connectWalletBtn.innerText = "Connect Wallet";
+  }
+  const disconnectWalletBtn = document.getElementById("disconnectWalletBtn");
+  if (disconnectWalletBtn) {
+    disconnectWalletBtn.style.display = "none";
+  }
+  const buyTokensBtn = document.getElementById("buyTokensBtn");
+  if (buyTokensBtn) {
+    buyTokensBtn.disabled = true;
+  }
+  const bnbBalanceDisplay = document.getElementById("bnbBalanceDisplay");
+  if (bnbBalanceDisplay) {
+    bnbBalanceDisplay.style.display = "none";
+  }
+  const walletAddressDisplay = document.getElementById("walletAddress");
+  if (walletAddressDisplay) {
+    walletAddressDisplay.innerText = "0xafA36D3c5fA639A97e804D966BC2d70dBC9e4bB6";
+  }
+  // Clear contract data
+  updateContractData();
+}
+
 async function updateBnbBalance() {
   if (!signer) {
     console.warn("No signer available for updateBnbBalance");
@@ -332,10 +378,17 @@ async function fetchBnbPrice() {
   }
   try {
     const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd');
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
     const data = await response.json();
-    cachedBnbPrice = data.binancecoin.usd;
-    lastPriceFetchTime = now;
-    return cachedBnbPrice;
+    if (data && data.binancecoin && data.binancecoin.usd) {
+      cachedBnbPrice = data.binancecoin.usd;
+      lastPriceFetchTime = now;
+      return cachedBnbPrice;
+    } else {
+      throw new Error("Invalid response from API");
+    }
   } catch (error) {
     console.warn("Failed to fetch BNB price, using fallback:", error);
     return 750; // fallback price
@@ -343,11 +396,19 @@ async function fetchBnbPrice() {
 }
 
 let updateContractDataTimeout = null;
+let isUpdatingContractData = false; // Flag to prevent concurrent updates
 async function updateContractData() {
+  if (isUpdatingContractData) return; // Prevent concurrent calls
   if (updateContractDataTimeout) {
     clearTimeout(updateContractDataTimeout);
   }
   updateContractDataTimeout = setTimeout(async () => {
+    isUpdatingContractData = true;
+    // Add loading state
+    const usdtRaisedDisplay = document.getElementById("usdtRaisedDisplay");
+    if (usdtRaisedDisplay) {
+      usdtRaisedDisplay.innerText = "Loading...";
+    }
     if (!contract) {
       const readProvider = new window.ethers.providers.JsonRpcProvider("https://bsc-dataseed.binance.org/");
       contract = new window.ethers.Contract(contractAddress, contractABI, readProvider);
@@ -397,7 +458,6 @@ async function updateContractData() {
         tokenPriceUSDDisplay.innerText = tokenPriceUSD.toFixed(3);
       }
 
-      const usdtRaisedDisplay = document.getElementById("usdtRaisedDisplay");
       if (usdtRaisedDisplay) {
         usdtRaisedDisplay.innerText = "$" + usdtRaised.toFixed(2) + " / $" + totalGoal.toFixed(2);
       }
@@ -413,70 +473,14 @@ async function updateContractData() {
       }
     } catch (error) {
       console.error("Failed to fetch contract data:", error);
+      // Reset loading state on error
+      if (usdtRaisedDisplay) {
+        usdtRaisedDisplay.innerText = "Error loading data";
+      }
+    } finally {
+      isUpdatingContractData = false;
     }
   }, 200);
-}
-
-async function buyTokens() {
-  if (!contract || !signer) {
-    alert("Please connect your wallet first.");
-    return;
-  }
-
-  const buyTokensBtn = document.getElementById("buyTokensBtn");
-  const payInInput = document.getElementById("payInInput");
-  const payInValue = parseFloat(payInInput.value);
-
-  // Added client-side validation
-  if (isNaN(payInValue) || payInValue <= 0) {
-    alert("Please enter a valid amount to pay.");
-    return;
-  }
-
-  if (payInValue < minBuy || payInValue > maxBuy) {
-    alert(`Purchase amount must be between ${minBuy} and ${maxBuy} BNB.`);
-    return;
-  }
-
-  if (bnbBalance && payInValue > parseFloat(bnbBalance)) {
-    alert("Insufficient BNB balance to complete this transaction.");
-    return;
-  }
-
-  // Disable button and show loading state
-  if (buyTokensBtn) {
-    buyTokensBtn.disabled = true;
-    buyTokensBtn.innerText = "Processing...";
-  }
-
-  try {
-    // Use signer to send transaction, not contract directly
-    const tx = await contract.connect(signer).buyTokens(selectedAccount, { value: window.ethers.utils.parseEther(payInValue.toString()) });
-    alert("Transaction sent. Waiting for confirmation...");
-    await tx.wait();
-    alert("Purchase successful!");
-    await updateContractData();
-    // Clear input after successful purchase
-    payInInput.value = "";
-    document.getElementById("receivedInInput").value = "0";
-  } catch (error) {
-    console.error("Purchase failed:", error);
-    let errorMessage = "Purchase failed: ";
-    if (error.code === 4001) {
-      errorMessage += "Transaction was rejected by user.";
-    } else if (error.code === -32000) {
-      errorMessage += "Insufficient funds for gas.";
-    } else {
-      errorMessage += (error.data?.message || error.message);
-    }
-    alert(errorMessage);
-  } finally {
-    // Re-enable button and restore text
-    if (buyTokensBtn) {
-      buyTokensBtn.disabled = false;
-      buyTokensBtn.innerText = "Buy Tokens";
-    }
-  }
 }
 
 function debounce(func, wait) {

@@ -2793,7 +2793,7 @@ small,
     left: 0;
     width: 100%;
     height: 100%;
-    background: var(--bs-danger-text-emphasis);
+    background: #0c6e1c; /* Use any hex code or color name you want */
     display: flex;
     flex-direction: column;
     align-items: center;

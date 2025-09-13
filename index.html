@@ -1,14 +1,12 @@
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="light">
 
-
-<!-- Mirrored from memeworld.pixellyo.com/html/home-3.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 09 Sep 2025 19:05:11 GMT -->
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Memeworld: A feature-rich HTML template for memecoin, crypto, and ICO projects. Modern design, responsive layout, and ready for Crypto Project">
-    <meta name="keywords" content="memecoin, crypto, ico, html template, themeforest, meme coin, cryptocurrency, blockchain, token, landing page, web3, nft, decentralized, finance, investment">
-    <meta name="author" content="bplugins">
+    <meta name="description" content="George Token: A Memecoin on Binance Smart Chain, aiming to reshape crypto space with it's unique rewards based mechanisim and on-chain features.">
+    <meta name="keywords" content="memecoin, crypto, ico, BNB, , meme coin, cryptocurrency, blockchain, web3, nft, decentralized, finance, investment">
+    <meta name="author" content="MAXDEV">
     <title>GEORGE TOKEN</title>
     <link rel="icon" href="assets/img/favicon.png" type="image/png">
     <link rel="stylesheet" href="assets/css/bootstrap.css">
@@ -18,6 +16,55 @@
     <link rel="stylesheet" href="assets/css/ff-1.css">
     <link rel="stylesheet" href="assets/css/ff-2.css">
     <link rel="stylesheet" href="assets/css/style.css">
+
+        <style>
+        @keyframes breathe {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        #launchingText {
+            animation-name: breathe;
+            animation-duration: 2s;
+            animation-iteration-count: infinite;
+            animation-timing-function: ease-in-out;
+        }
+    @media (max-width: 767px) {
+        .hero-3__element,
+        .hero-3__element--1,
+        .hero-3__element--2,
+        .hero-3__element--3,
+        .hero-3__element--4 {
+            display: none !important;
+            visibility: hidden !important;
+        }
+
+        .hero-3__img,
+        .hero-bg-4,
+        .tokenomics-section-1__img,
+        .about-section-1 img {
+            display: block !important;
+            position: relative !important;
+            max-width: 100% !important;
+            height: auto !important;
+            margin: 0 auto !important;
+            visibility: visible !important;
+        }
+
+        .tokenomics-section-1__img--2 {
+            margin-bottom: 0 !important;
+            display: none !important;
+        }
+
+        .tokenomics-section-1__img--3,
+        .tokenomics-section-1__img--4,
+        .hero-bg-4 {
+            display: none !important;
+        }
+    }
+    
+    </style>
 </head>
 
 <body data-page="home" class="bg-success-emphasis overflow-x-hidden">
@@ -74,11 +121,20 @@
                         <a class="nav-link" aria-current="page" href="#tokenomics-section"> Tokenomics </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" aria-current="page" href="#faq-section"> FAQ </a>
+                        <a class="nav-link" aria-current="page" href="assets/img/George Token Whitepaper.pdf"> Whitepaper </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" href="#footer-section"> Contact </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" href="index.html"> Blog </a>
+                    </li>                    
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" href="#faq-section"> FAQ </a>
+                    </li>                                        
                 </ul>
                 <div class="d-flex align-items-center gap-3 ms-lg-auto">
-                    <a href="sign-in.html" class="btn btn-light fw-bold text-heading "> Get Started </a>
+                    <a href="#how-to-buy-section" class="btn btn-light fw-bold text-heading "> Get Started </a>
                 </div>
             </nav>
             <!-- Menu End -->
@@ -95,23 +151,23 @@
                             <span class="d-inline-block mb-4 text-secondary fs-24 text-stroke gsap-text-animation" data-delay="1" data-split-type="words"> ON THE WAY TO BECOME </span>
                             <h1 class="hero-1__title mb-10 text-light text-stroke-md text-shadow-md gsap-text-animation" data-delay="1.25" data-split-type="words"> THE NEXT MEME KING </h1>
                             <div class="d-flex align-items-center flex-wrap gap-4">
-                                <a href="sign-in.html" class="btn btn-lg btn-secondary text-heading align-items-center rounded gsap-fade-in" data-delay="1.5" data-y="50">
+                                <a href="https://www.dextools.io/app/en/bnb/pair-explorer/0x28b6115994f85c7313127e82cb7f5b237d76c056?t=1757711724389" class="btn btn-lg btn-secondary text-heading align-items-center rounded gsap-fade-in" data-delay="1.5" data-y="50">
                                     <iconify-icon icon="mingcute:binance-coin-bnb-fill"></iconify-icon>
-                                    <span class="d-inline-block ff-1">DexTools</span>
+                                    <span class="d-inline-block ff-1">CHART</span>
                                 </a>
-                                <a href="sign-in.html" class="btn btn-lg btn-light text-heading align-items-center rounded gsap-fade-in" data-delay="1.75" data-y="50">
+                                <a href="https://pancakeswap.finance/info/0x28b6115994f85c7313127e82cb7f5b237d76c056/pairs/0x28b6115994f85c7313127e82cb7f5b237d76c056" class="btn btn-lg btn-light text-heading align-items-center rounded gsap-fade-in" data-delay="1.75" data-y="50">
                                     <iconify-icon icon="mingcute:binance-coin-bnb-fill"></iconify-icon>
-                                    <span class="d-inline-block ff-1">Buy Now</span>
+                                    <span class="d-inline-block ff-1">DEX</span>
                                 </a>
                             </div>
                         </div>
                         <div class="col-lg-6">
                             <div id="presale-section" class="token-card-2 bg-secondary rounded-5 p-4 px-sm-6 px-xl-8 px-xxl-12 pt-sm-12 pb-sm-30 gsap-fade-in" data-delay="2" style="border: 3px solid #ff0000; box-shadow: 0 0 15px #ff0000;">
                                 <h5 class="text-light text-stroke text-center overflow-hidden">
-                                    <span class="d-inline-block position-relative text-splash text-splash--2x text-splash--dark"> PRESALE ENDING IN </span>
+                                    <span class="d-inline-block position-relative text-splash text-splash--2x text-splash--dark"> PRESALE PHASE 2 ENDING IN </span>
                                 </h5>
                                 <div class="bg-light border border-dark shadow-sharp rounded-4 p-4">
-                                    <div class="countdown d-flex align-items-center justify-content-center gap-3 gap-sm-6 gap-lg-4 gap-xl-6 flex-wrap" data-date="2025-10-10">
+                                <div class="countdown d-flex align-items-center justify-content-center gap-3 gap-sm-6 gap-lg-4 gap-xl-6 flex-wrap" data-date="2025-10-12">
                                         <div class="d-flex flex-column align-items-center">
                                             <span class="days counter-1__text text-heading lh-1/2"></span>
                                             <span class="d-block"> DAYS </span>
@@ -135,8 +191,9 @@
                                 </div>
                                 <span class="d-block text-center fs-18 text-heading my-6"> USDT RAISED : <span id="usdtRaisedDisplay"></span></span>
                                 <div class="d-flex align-items-center justify-content-between">
-                                    <span class="d-block h6 m-0 text-light text-stroke text-shadow"> Tokens Sold </span>
-                                    <span id="progressPercent" class="d-block h6 m-0 text-light text-stroke text-shadow"></span>
+                                <span class="d-block h6 m-0 text-light text-stroke text-shadow"> Tokens Sold </span>
+                                <span id="launchingText" class="launching-text" style="color: white; text-shadow: -2px -2px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; font-size: 15px;">Launching on 13-10-2025 on Pancakeswap</span>                                 
+                                <span id="progressPercent" class="d-block h6 m-0 text-light text-stroke text-shadow"></span>
                                 </div>
                                 <div class="progress mt-3">
                                     <div id="progressBar" class="progress-bar bg-danger" style="width: 80%"></div>
@@ -145,12 +202,6 @@
                                     <span class="d-inline-block position-relative text-splash text-splash--2x text-splash--dark"> 1 GEORGE = $0.015 </span>
                                 </h5>
                                 <ul class="list list-row gap-3 flex-wrap justify-content-center">
-                                    <li>
-                                        <a href="#" class="btn btn-sm btn-light text-heading align-items-center rounded">
-                                            <iconify-icon icon="token-branded:binance" class="fs-24"></iconify-icon>
-                                            <span class="d-inline-block ff-1"> BINANCE </span>
-                                        </a>
-                                    </li>
                                     <li>
                                         <a href="#" class="btn btn-sm btn-light text-heading align-items-center rounded">
                                             <iconify-icon icon="arcticons:mexc" class="fs-24"></iconify-icon>
@@ -167,6 +218,12 @@
                                         <a href="#" class="btn btn-sm btn-light text-heading align-items-center rounded">
                                             <iconify-icon icon="token-branded:kucoin" class="fs-24"></iconify-icon>
                                             <span class="d-inline-block ff-1"> KUCOIN </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#" class="btn btn-sm btn-light text-heading align-items-center rounded">
+                                            <iconify-icon icon="token-branded:binance" class="fs-24"></iconify-icon>
+                                            <span class="d-inline-block ff-1"> BINANCE </span>
                                         </a>
                                     </li>
                                 </ul>
@@ -186,7 +243,7 @@
                       <div>Rate: <span id="rateDisplay">50000 GEORGE/BNB</span></div>
                       <div>Min Buy: <span id="minBuyDisplay">0.01</span> BNB</div>
                       <div>Max Buy: <span id="maxBuyDisplay">1</span> BNB</div>
-                      <div>Presale Ends: 10-10-2025</div>
+                    <div class="launch-text">Presale ending on 12-10-2025</div>
                     </div>
                     <button id="connectWalletBtn" class="btn btn-lg btn-danger align-items-center rounded w-100 justify-content-center text-light">
                         <iconify-icon icon="mingcute:binance-coin-bnb-fill"></iconify-icon>
@@ -196,21 +253,21 @@
                         <span class="d-inline-block ff-1"> Disconnect Wallet </span>
                     </button>
                     <button id="buyTokensBtn" class="btn btn-lg btn-secondary align-items-center rounded w-100 justify-content-center text-light mt-3" disabled>
-                        <span class="d-inline-block ff-1"> Buy Now </span>
-                    </button>
-                    <div id="bnbBalanceDisplay" class="text-light mt-3 text-center" style="font-weight: bold; font-size: 1.2rem; display:none;">
-                        BNB Balance: <span id="bnbBalance">0</span> BNB
-                    </div>
+                                <span class="d-inline-block ff-1"> Buy Now </span>
+                            </button>
+                            <div id="bnbBalanceDisplay" class="text-light mt-3 text-center" style="font-weight: bold; font-size: 1.2rem; display:none;">
+                                Your BNB Balance: <span id="bnbBalance">0</span> BNB
+                            </div>
                             </div>
                         </div>
                     </div>
-                </div>
+             </div>
                 <img src="assets/img/hero-img-3.png" alt="image" class="img-fluid hero-3__img gsap-fade-in" data-delay="2.25" data-y="25" data-dureation="2">
                 <img src="assets/img/shape/hero-bg-4.png" alt="image" class="img-fluid w-100 position-absolute start-0 bottom-0 z-n2 pointer-none gsap-fade-in" data-delay="3.5">
-                <img src="assets/img/shape/hero-element-15.png" alt="image" class="img-fluid hero-3__element hero-3__element--1 gsap-fade-in" data-delay="3.75" data-y="25">
-                <img src="assets/img/shape/hero-element-16.png" alt="image" class="img-fluid hero-3__element hero-3__element--2 gsap-fade-in" data-delay="4" data-y="25">
-                <img src="assets/img/shape/hero-element-15.png" alt="image" class="img-fluid hero-3__element hero-3__element--3 gsap-fade-in" data-delay="4.25" data-y="25">
-                <img src="assets/img/shape/hero-element-16.png" alt="image" class="img-fluid hero-3__element hero-3__element--4 gsap-fade-in" data-delay="4.5" data-y="25">
+                <img src="assets/img/shape/hero-element-15.png" alt="image" style="display: none;" class="img-fluid hero-3__element hero-3__element--1 gsap-fade-in" data-delay="3.75" data-y="25">
+                <img src="assets/img/shape/hero-element-16.png" alt="image" style="display: none;" class="img-fluid hero-3__element hero-3__element--2 gsap-fade-in" data-delay="4" data-y="25">
+                <img src="assets/img/shape/hero-element-15.png" alt="image" style="display: none;" class="img-fluid hero-3__element hero-3__element--1 gsap-fade-in" data-delay="3.75" data-y="25">
+                <img src="assets/img/shape/hero-element-16.png" alt="image" style="display: none;" class="img-fluid hero-3__element hero-3__element--2 gsap-fade-in" data-delay="4" data-y="25">
             </div>
             <!-- Hero End -->
             <!-- Ticker -->
@@ -267,7 +324,7 @@
             <div id="about-section" class="about-section-1 section-space-y">
                 <div class="container">
                     <div class="row g-4 align-items-center">
-                        <div class="col-lg-4 d-none d-lg-block">
+                        <div class="col-lg-4">
                             <img src="assets/img/about-img-3.png" alt="image" class="img-fluid gsap-fade-in" data-scroll-trigger="true" data-y="15">
                         </div>
                         <div class="col-lg-8">
@@ -281,25 +338,35 @@
                                     </a>
                                     <ul class="list list-row align-items-center flex-wrap gap-4">
                                         <li>
-                                            <a href="#" class="btn btn-icon btn-light rounded-circle">
+                                            <a href="https://www.facebook.com/share/16z8CWMpv7/?mibextid=qi2Omg" class="btn btn-icon btn-light rounded-circle">
                                                 <iconify-icon icon="ri:facebook-fill"></iconify-icon>
                                             </a>
                                         </li>
                                         <li>
-                                            <a href="#" class="btn btn-icon btn-light rounded-circle">
+                                            <a href="https://x.com/Georgetoken_bsc" class="btn btn-icon btn-light rounded-circle">
                                                 <iconify-icon icon="prime:twitter"></iconify-icon>
                                             </a>
                                         </li>
                                         <li>
-                                            <a href="#" class="btn btn-icon btn-light rounded-circle">
+                                            <a href="https://www.instagram.com/george_token_official/profilecard/?igsh=Y3dxdm9jemtzdzcz" class="btn btn-icon btn-light rounded-circle">
                                                 <iconify-icon icon="uil:instagram"></iconify-icon>
                                             </a>
                                         </li>
                                         <li>
-                                            <a href="#" class="btn btn-icon btn-light rounded-circle">
-                                                <iconify-icon icon="ri:linkedin-fill"></iconify-icon>
+                                            <a href="https://t.me/georgetokenofficial" class="btn btn-icon btn-light rounded-circle">
+                                                <iconify-icon icon="basil:telegram-outline"></iconify-icon>
                                             </a>
                                         </li>
+                                        <li>
+                                            <a href="https://youtube.com/@george-token-official?si=OMXwexC3YRWfWA2z" class="btn btn-icon btn-light rounded-circle">
+                                                <iconify-icon icon="typcn:social-youtube-circular"></iconify-icon>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="https://www.tiktok.com/@george_7890?_t=ZP-8tfsKUd8aXX&_r=1" class="btn btn-icon btn-light rounded-circle">
+                                                <iconify-icon icon="ri:tiktok-fill"></iconify-icon>
+                                            </a>
+                                        </li>                                                                               
                                     </ul>
                                 </div>
                                 <div class="d-flex align-items-center p-3 rounded bg-light border border-1x border-dark shadow-sharp mt-8">
@@ -356,9 +423,9 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-4 d-none d-lg-block">
+                        <div class="col-lg-4">
                             <img src="assets/img/how-to-buy-img-3.png" alt="image" class="img-fluid gsap-fade-in" data-scroll-trigger="true" data-y="25">
-                        </div>
+                                </div>
                     </div>
                 </div>
             </div>
@@ -611,12 +678,16 @@
                     <div class="row g-4">
                         <div class="col-lg-8 col-xl-6 ms-lg-auto">
                             <div class="row g-4">
-                                <div class="col-md-6 gsap-fade-in" data-scroll-trigger="true" data-y="25">
-                                    <div class="token-card-3 h-100 text-center">
-                                        <h2 class="text-secondary text-stroke">85%</h2>
-                                        <span class="d-block h6 m-0 text-heading"> LOCKED </span>
-                                    </div>
-                                </div>
+<div class="col-md-6 gsap-fade-in" data-scroll-trigger="true" data-y="25">
+    <div class="token-card-3 h-100 text-center">
+        <h2 class="text-secondary text-stroke">80%</h2>
+        <span class="d-block h6 m-0 text-heading"> LOCKED </span>
+<a href="https://www.pinksale.finance/pinklock/bsc/record/1353033" target="_blank" class="btn btn-lg text-heading align-items-center rounded gsap-fade-in mt-3" style="display: inline-flex; justify-content: center; background-color: #FFD700; border-color: #FFD700; color: black;">
+    <iconify-icon icon="mingcute:binance-coin-bnb-fill"></iconify-icon>
+    <span class="d-inline-block ff-1 ms-2">UNLOCK SCHEDULE</span>
+</a>
+    </div>
+</div>
                                 <div class="col-md-6 gsap-fade-in" data-scroll-trigger="true" data-y="25" data-delay="0.25">
                                     <div class="token-card-3 h-100 text-center">
                                         <h2 class="text-danger text-stroke">1B</h2>
@@ -631,7 +702,7 @@
                                 </div>
                                 <div class="col-md-6 gsap-fade-in" data-scroll-trigger="true" data-y="25" data-delay="0.25">
                                     <div class="token-card-3 h-100 text-center">
-                                        <h2 class="text-success text-stroke">5%</h2>
+                                        <h2 class="text-success text-stroke">10%</h2>
                                         <span class="d-block h6 m-0 text-heading"> Staking </span>
                                     </div>
                                 </div>
@@ -649,8 +720,8 @@
                 </div>
                 <img src="assets/img/tokenomics-img-4.png" alt="image" class="img-fluid tokenomics-section-1__img tokenomics-section-1__img--1 gsap-fade-in" data-scroll-trigger="true" data-delay="0.5">
                 <img src="assets/img/shape/tokenomics-element-1.png" alt="image" class="img-fluid tokenomics-section-1__img tokenomics-section-1__img--2 gsap-fade-in" data-scroll-trigger="true" data-delay="0.5">
-                <img src="assets/img/shape/about-element-3.png" alt="image" class="img-fluid tokenomics-section-1__img tokenomics-section-1__img--3 gsap-fade-in" data-scroll-trigger="true" data-delay="0.5">
-                <img src="assets/img/shape/hero-element-6.png" alt="image" class="img-fluid tokenomics-section-1__img tokenomics-section-1__img--4 gsap-fade-in" data-scroll-trigger="true" data-delay="0.5" style="max-width: 60%; height: auto;">
+                <img src="assets/img/shape/about-element-3.png" alt="image" class="img-fluid tokenomics-section-1__img tokenomics-section-1__img--3">
+                <img src="assets/img/shape/hero-element-6.png" alt="image" class="img-fluid tokenomics-section-1__img tokenomics-section-1__img--4" style="max-width: 60%; height: auto;">
             </div>
             <!-- Tokenomics End -->
             <!-- Ticker -->
@@ -821,35 +892,46 @@
                                         <h2 class="h1 mb-8 text-light text-stroke text-shadow gsap-text-animation" data-scroll-trigger="true" data-split-type="words"> JOIN OUR COMMUNITY </h2>
                                         <ul class="list list-row align-items-center flex-wrap gap-4">
                                             <li class="gsap-fade-in" data-scroll-trigger="true" data-y="25">
-                                                <a href="#" class="btn btn-icon btn-light rounded-circle">
-                                                    <iconify-icon icon="ri:facebook-fill"></iconify-icon>
-                                                </a>
-                                            </li>
-                                            <li class="gsap-fade-in" data-scroll-trigger="true" data-y="25" data-delay="0.25">
-                                                <a href="#" class="btn btn-icon btn-light rounded-circle">
-                                                    <iconify-icon icon="prime:twitter"></iconify-icon>
-                                                </a>
-                                            </li>
-                                            <li class="gsap-fade-in" data-scroll-trigger="true" data-y="25" data-delay="0.5">
-                                                <a href="#" class="btn btn-icon btn-light rounded-circle">
-                                                    <iconify-icon icon="uil:instagram"></iconify-icon>
-                                                </a>
-                                            </li>
-                                            <li class="gsap-fade-in" data-scroll-trigger="true" data-y="25" data-delay="0.75">
-                                                <a href="#" class="btn btn-icon btn-light rounded-circle">
-                                                    <iconify-icon icon="ri:linkedin-fill"></iconify-icon>
-                                                </a>
-                                            </li>
+                                        <li>
+                                            <a href="https://www.facebook.com/share/16z8CWMpv7/?mibextid=qi2Omg" class="btn btn-icon btn-light rounded-circle">
+                                                <iconify-icon icon="ri:facebook-fill"></iconify-icon>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="https://x.com/Georgetoken_bsc" class="btn btn-icon btn-light rounded-circle">
+                                                <iconify-icon icon="prime:twitter"></iconify-icon>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="https://www.instagram.com/george_token_official/profilecard/?igsh=Y3dxdm9jemtzdzcz" class="btn btn-icon btn-light rounded-circle">
+                                                <iconify-icon icon="uil:instagram"></iconify-icon>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="https://t.me/georgetokenofficial" class="btn btn-icon btn-light rounded-circle">
+                                                <iconify-icon icon="basil:telegram-outline"></iconify-icon>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="https://youtube.com/@george-token-official?si=OMXwexC3YRWfWA2z" class="btn btn-icon btn-light rounded-circle">
+                                                <iconify-icon icon="typcn:social-youtube-circular"></iconify-icon>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="https://www.tiktok.com/@george_7890?_t=ZP-8tfsKUd8aXX&_r=1" class="btn btn-icon btn-light rounded-circle">
+                                                <iconify-icon icon="ri:tiktok-fill"></iconify-icon>
+                                            </a>
+                                        </li> 
                                         </ul>
                                     </div>
                                 </div>
-                                <img src="assets/img/cta-img-1.png" alt="image" class="img-fluid d-none d-md-block position-absolute end-0 bottom-0 z-n1 pointer-none gsap-fade-in" data-scroll-trigger="true" data-y="25">
+                                <img src="assets/img/cta-img-1.png" alt="image" class="img-fluid position-absolute end-0 bottom-0 z-n1 pointer-none gsap-fade-in" data-scroll-trigger="true" data-y="25">
                                 <img src="assets/img/shape/hero-element-6.png" alt="image" class="img-fluid d-none d-lg-block position-absolute top-10 start-50 translate-middle-x z-n1 pointer-none gsap-fade-in" data-scroll-trigger="true" data-delay="0.5">
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="section-space-md-top section-space-xsm-bottom">
+                <div id="footer-section" class="section-space-md-top section-space-xsm-bottom">
                     <div class="container">
                         <div class="row g-4">
                             <div class="col-xl-8">
@@ -860,60 +942,53 @@
                                         </a>
                                         <p class="mb-6 text-light"> Trading cryptocurrencies is highly speculative, carries a high level of risk </p>
                                         <ul class="list list-row align-items-center flex-wrap gap-4">
-                                            <li>
-                                                <a href="#" class="btn btn-icon btn-light rounded-circle">
-                                                    <iconify-icon icon="ri:facebook-fill"></iconify-icon>
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="#" class="btn btn-icon btn-light rounded-circle">
-                                                    <iconify-icon icon="prime:twitter"></iconify-icon>
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="#" class="btn btn-icon btn-light rounded-circle">
-                                                    <iconify-icon icon="uil:instagram"></iconify-icon>
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="#" class="btn btn-icon btn-light rounded-circle">
-                                                    <iconify-icon icon="ri:linkedin-fill"></iconify-icon>
-                                                </a>
-                                            </li>
+                                        <li>
+                                            <a href="https://www.facebook.com/share/16z8CWMpv7/?mibextid=qi2Omg" class="btn btn-icon btn-light rounded-circle">
+                                                <iconify-icon icon="ri:facebook-fill"></iconify-icon>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="https://x.com/Georgetoken_bsc" class="btn btn-icon btn-light rounded-circle">
+                                                <iconify-icon icon="prime:twitter"></iconify-icon>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="https://www.instagram.com/george_token_official/profilecard/?igsh=Y3dxdm9jemtzdzcz" class="btn btn-icon btn-light rounded-circle">
+                                                <iconify-icon icon="uil:instagram"></iconify-icon>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="https://t.me/georgetokenofficial" class="btn btn-icon btn-light rounded-circle">
+                                                <iconify-icon icon="basil:telegram-outline"></iconify-icon>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="https://youtube.com/@george-token-official?si=OMXwexC3YRWfWA2z" class="btn btn-icon btn-light rounded-circle">
+                                                <iconify-icon icon="typcn:social-youtube-circular"></iconify-icon>
+                                            </a>
+                                        </li>
                                         </ul>
                                     </div>
-                                    <div class="col-md-4 gsap-fade-in" data-scroll-trigger="true" data-delay="0.25">
-                                        <h5 class="text-light">QUICK LINKS</h5>
-                                        <ul class="list gap-2">
-                                            <li>
-                                                <a href="index.html" class="link d-inline-block text-light hover:text-danger"> HOME </a>
-                                            </li>
-                                            <li>
-                                                <a href="about.html" class="link d-inline-block text-light hover:text-danger"> About </a>
-                                            </li>
-                                            <li>
-                                                <a href="blog.html" class="link d-inline-block text-light hover:text-danger"> Blog </a>
-                                            </li>
-                                            <li>
-                                                <a href="contact.html" class="link d-inline-block text-light hover:text-danger"> CONTACT </a>
-                                            </li>
-                                        </ul>
-                                    </div>
+                            <div class="col-md-4 gsap-fade-in" data-scroll-trigger="true" data-delay="0.25">
+                                <h5 class="text-light">QUICK LINKS</h5>
+                                <ul class="list gap-2">
+                                    <li>
+                                        <a href="index.html" class="link d-inline-block text-light hover:text-danger"> HOME </a>
+                                    </li>
+                                    <li>
+                                        <a href="about.html" class="link d-inline-block text-light hover:text-danger"> About </a>
+                                    </li>
+                                    <li>
+                                        <a href="index.html" class="link d-inline-block text-light hover:text-danger"> Blog (Coming Soon) </a>
+                                    </li>
+                                    <li>
+                                        <a href="assets/img/George Token Whitepaper.pdf" class="link d-inline-block text-light hover:text-danger"> Whitepaper </a>
+                                    </li>
+                                </ul>
+                            </div>
                                     <div class="col-md-3 gsap-fade-in" data-scroll-trigger="true" data-delay="0.5">
                                         <h5 class="text-light">CONTACT</h5>
                                         <ul class="list gap-2">
-                                            <li>
-                                                <div class="d-flex align-items-center gap-2">
-                                                    <iconify-icon icon="akar-icons:location" class="text-light flex-shrink-0 fs-24"></iconify-icon>
-                                                    <p class="mb-0 text-light"> 2972 Westheimer Rd. Santa Ana </p>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="d-flex align-items-center gap-2">
-                                                    <iconify-icon icon="mynaui:telephone-call" class="text-light flex-shrink-0 fs-24"></iconify-icon>
-                                                    <p class="mb-0 text-light"> +123 387945671 </p>
-                                                </div>
-                                            </li>
                                             <li>
                                                 <div class="d-flex align-items-center gap-2">
                                                     <iconify-icon icon="basil:envelope-outline" class="text-light flex-shrink-0 fs-24"></iconify-icon>
@@ -942,10 +1017,10 @@
                             <div class="col-lg-7">
                                 <ul class="list list-row gap-4 flex-wrap justify-content-center justify-content-lg-end">
                                     <li class="gsap-fade-in" data-scroll-trigger="true">
-                                        <a href="privacy-policy.html" class="link fs-18 text-light hover:text-primary"> Privacy Policy </a>
+                                        <a href="index.html" class="link fs-18 text-light hover:text-primary"> Privacy Policy </a>
                                     </li>
                                     <li class="gsap-fade-in" data-scroll-trigger="true" data-delay="0.25">
-                                        <a href="terms.html" class="link fs-18 text-light hover:text-primary"> Terms of Use </a>
+                                        <a href="index.html" class="link fs-18 text-light hover:text-primary"> Terms of Use </a>
                                     </li>
                                 </ul>
                             </div>

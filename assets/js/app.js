@@ -305,9 +305,18 @@ document.addEventListener("DOMContentLoaded", function () {
     normalizeScroll: true,
     smoothTouch: 0.1
   });
-  /**
-   * Animation
-   */
+/**
+ * Animation
+ */
+return;
+  
+  gsap.matchMedia().add("(max-width: 1199px)", function () {
+    var elementsToRemove = document.querySelectorAll(".hero-3__element");
+    elementsToRemove.forEach(function(el) {
+        el.remove();
+    });
+});
+
   var mm = gsap.matchMedia();
   mm.add("(min-width: 1200px)", function () {
     function textAnimation() {
@@ -407,41 +416,43 @@ document.addEventListener("DOMContentLoaded", function () {
         });
       }
     }
-    function fadeInAnimation() {
-      var fadeIn = gsap.utils.toArray(".gsap-fade-in");
-      if (!fadeIn.length) return;
-      for (var i = 0; i < fadeIn.length; i++) {
-        var item = fadeIn[i];
-        var scrollTriggerSupport = item.dataset.scrollTrigger;
-        var animationStart = item.dataset.start || "85%";
-        var animationEnd = item.dataset.end || "25%";
-        var animationStagger = item.dataset.stagger || "0";
-        var animationDuration = item.dataset.duration || "1";
-        var animationDelay = item.dataset.delay || "0";
-        var animationY = item.dataset.y || "0";
-        var animationX = item.dataset.x || "0";
-        var animationOpacity = item.dataset.opacity || "0";
-        var scrollMarker = item.dataset.markers || false;
-        var tl = scrollTriggerSupport ? gsap.timeline({
-          scrollTrigger: {
-            trigger: item,
-            start: "clamp(top ".concat(animationStart, ")"),
-            end: "clamp(bottom ".concat(animationEnd, ")"),
-            markers: scrollMarker,
-            once: true
-          }
-        }) : gsap.timeline();
-        tl.from(item, {
-          opacity: parseFloat(animationOpacity),
-          yPercent: parseFloat(animationY),
-          xPercent: parseFloat(animationX),
-          delay: parseFloat(animationDelay),
-          stagger: parseFloat(animationStagger),
-          duration: parseFloat(animationDuration),
-          ease: "back.out"
-        });
+
+
+function fadeInAnimation() {
+  var fadeIn = gsap.utils.toArray(".gsap-fade-in");
+  if (!fadeIn.length) return;
+  for (var i = 0; i < fadeIn.length; i++) {
+    var item = fadeIn[i];
+    var scrollTriggerSupport = item.dataset.scrollTrigger;
+    var animationStart = item.dataset.start || "85%";
+    var animationEnd = item.dataset.end || "25%";
+    var animationStagger = item.dataset.stagger || "0";
+    var animationDuration = item.dataset.duration || "1";
+    var animationDelay = item.dataset.delay || "0";
+    var animationY = item.dataset.y || "0";
+    var animationX = item.dataset.x || "0";
+    var animationOpacity = item.dataset.opacity || "0";
+    var scrollMarker = item.dataset.markers || false;
+    var tl = scrollTriggerSupport ? gsap.timeline({
+      scrollTrigger: {
+        trigger: item,
+        start: "clamp(top ".concat(animationStart, ")"),
+        end: "clamp(bottom ".concat(animationEnd, ")"),
+        markers: scrollMarker,
+        once: true
       }
-    }
+    }) : gsap.timeline();
+    tl.from(item, {
+      opacity: parseFloat(animationOpacity),
+      yPercent: parseFloat(animationY),
+      xPercent: parseFloat(animationX),
+      delay: parseFloat(animationDelay),
+      stagger: parseFloat(animationStagger),
+      duration: parseFloat(animationDuration),
+      ease: "back.out"
+    });
+  }
+}
     function zoomAnimation() {
       var zoomAnimation = gsap.utils.toArray(".gsap-zoom");
       if (!zoomAnimation.length) return;
