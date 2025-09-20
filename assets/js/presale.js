@@ -194,6 +194,16 @@ async function connectWallet() {
   }
 
   try {
+    // Try Simple Wallet Manager first (reliable approach)
+    if (window.simpleWalletManager) {
+      console.log("Using Simple Wallet Manager");
+      await window.simpleWalletManager.connect();
+      return;
+    }
+
+    // Fallback to original Web3Modal
+    console.log("Simple Wallet Manager not available, using fallback");
+
     // Check if web3Modal is initialized
     if (!web3Modal) {
       throw new Error("Web3Modal not initialized. Please refresh the page.");
@@ -434,37 +444,59 @@ async function buyTokens() {
 }
 
 async function disconnectWallet() {
-  if (provider && provider.close) {
-    await provider.close();
+  try {
+    // Try Simple Wallet Manager first
+    if (window.simpleWalletManager) {
+      console.log("Using Simple Wallet Manager disconnect");
+      await window.simpleWalletManager.disconnect();
+      return;
+    }
+
+    // Fallback to original Web3Modal
+    if (provider && provider.close) {
+      await provider.close();
+    }
+    if (web3Modal) {
+      web3Modal.clearCachedProvider();
+    }
+
+    selectedAccount = null;
+    bnbBalance = null;
+
+    // Reset UI
+    const connectWalletBtn = document.getElementById("connectWalletBtn");
+    if (connectWalletBtn) {
+      connectWalletBtn.style.display = "block";
+      connectWalletBtn.disabled = false;
+      connectWalletBtn.innerText = "Connect Wallet";
+    }
+
+    const disconnectWalletBtn = document.getElementById("disconnectWalletBtn");
+    if (disconnectWalletBtn) {
+      disconnectWalletBtn.style.display = "none";
+    }
+
+    const buyTokensBtn = document.getElementById("buyTokensBtn");
+    if (buyTokensBtn) {
+      buyTokensBtn.disabled = true;
+    }
+
+    const bnbBalanceDisplay = document.getElementById("bnbBalanceDisplay");
+    if (bnbBalanceDisplay) {
+      bnbBalanceDisplay.style.display = "none";
+    }
+
+    const walletAddressDisplay = document.getElementById("walletAddress");
+    if (walletAddressDisplay) {
+      walletAddressDisplay.innerText = "0xafA36D3c5fA639A97e804D966BC2d70dBC9e4bB6";
+    }
+
+    // Clear contract data
+    updateContractData();
+
+  } catch (error) {
+    console.error("Error disconnecting wallet:", error);
   }
-  web3Modal.clearCachedProvider();
-  selectedAccount = null;
-  bnbBalance = null;
-  // Reset UI
-  const connectWalletBtn = document.getElementById("connectWalletBtn");
-  if (connectWalletBtn) {
-    connectWalletBtn.style.display = "block";
-    connectWalletBtn.disabled = false;
-    connectWalletBtn.innerText = "Connect Wallet";
-  }
-  const disconnectWalletBtn = document.getElementById("disconnectWalletBtn");
-  if (disconnectWalletBtn) {
-    disconnectWalletBtn.style.display = "none";
-  }
-  const buyTokensBtn = document.getElementById("buyTokensBtn");
-  if (buyTokensBtn) {
-    buyTokensBtn.disabled = true;
-  }
-  const bnbBalanceDisplay = document.getElementById("bnbBalanceDisplay");
-  if (bnbBalanceDisplay) {
-    bnbBalanceDisplay.style.display = "none";
-  }
-  const walletAddressDisplay = document.getElementById("walletAddress");
-  if (walletAddressDisplay) {
-    walletAddressDisplay.innerText = "0xafA36D3c5fA639A97e804D966BC2d70dBC9e4bB6";
-  }
-  // Clear contract data
-  updateContractData();
 }
 
 async function updateBnbBalance() {
