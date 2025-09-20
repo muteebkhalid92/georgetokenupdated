@@ -36,40 +36,154 @@ const Web3Modal = window.Web3Modal && window.Web3Modal.default ? window.Web3Moda
 const WalletConnectProvider = window.WalletConnectProvider && window.WalletConnectProvider.default ? window.WalletConnectProvider.default : window.WalletConnectProvider;
 
 const providerOptions = {
+  // MetaMask and other injected wallets
   injected: {
-    package: null
+    display: {
+      name: "MetaMask",
+      description: "Connect with MetaMask",
+      logo: "https://docs.metamask.io/img/metamask-fox.svg"
+    }
   },
+
+  // WalletConnect with mobile-friendly configuration
   walletconnect: {
     package: WalletConnectProvider,
     options: {
       rpc: {
         56: "https://bsc-dataseed.binance.org/"
       },
-      chainId: 56
+      chainId: 56,
+      qrcodeModalOptions: {
+        mobileLinks: [
+          "metamask",
+          "trust",
+          "rainbow",
+          "argent",
+          "imtoken",
+          "pillar",
+          "coinbase",
+          "binance"
+        ]
+      }
     }
   },
+
+  // Binance Chain Wallet
   binancechainwallet: {
+    package: true
+  },
+
+  // Trust Wallet
+  trustwallet: {
+    package: true
+  },
+
+  // Add custom wallet options for better mobile support
+  custom: {
+    display: {
+      name: "Trust Wallet",
+      logo: "https://trustwallet.com/assets/images/logo.png",
+      description: "Connect with Trust Wallet"
+    },
     package: true
   }
 };
 
 async function init() {
-  // Correctly initialize Web3Modal
-  web3Modal = new Web3Modal({
-    cacheProvider: true,
-    providerOptions: providerOptions,
-    theme: {
-      background: "#55aaffab",
-      main: "#000000",
-      secondary: "#ffffff",
-      hover: "#4e49003f"
+  try {
+    // Check if Web3Modal is available
+    if (typeof Web3Modal === 'undefined') {
+      console.error("Web3Modal not loaded");
+      alert("Wallet connection library not loaded. Please refresh the page.");
+      return;
     }
-  });
 
-  document.getElementById("connectWalletBtn").addEventListener("click", connectWallet);
-  document.getElementById("buyTokensBtn").addEventListener("click", buyTokens);
+    // Initialize Web3Modal with mobile-optimized configuration
+    web3Modal = new Web3Modal({
+      cacheProvider: true,
+      providerOptions: providerOptions,
+      disableInjectedProvider: false,
+      theme: {
+        background: "rgba(85, 170, 255, 0.9)",
+        main: "#000000",
+        secondary: "#ffffff",
+        border: "rgba(255, 255, 255, 0.2)",
+        hover: "rgba(78, 73, 0, 0.25)"
+      }
+    });
 
-  await updateContractData();
+    // Configure for better mobile wallet detection
+    if (web3Modal && web3Modal.modal) {
+      web3Modal.modal.setTheme({
+        background: "rgba(85, 170, 255, 0.9)",
+        main: "#000000",
+        secondary: "#ffffff",
+        border: "rgba(255, 255, 255, 0.2)",
+        hover: "rgba(78, 73, 0, 0.25)"
+      });
+    }
+
+    console.log("Web3Modal initialized successfully");
+  } catch (error) {
+    console.error("Failed to initialize Web3Modal:", error);
+    alert("Failed to initialize wallet connection. Please refresh the page.");
+    return;
+  }
+
+  // Wait for DOM to be ready before adding event listeners
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', addEventListeners);
+  } else {
+    addEventListeners();
+  }
+}
+
+function addEventListeners() {
+  const connectWalletBtn = document.getElementById("connectWalletBtn");
+  const buyTokensBtn = document.getElementById("buyTokensBtn");
+
+  if (connectWalletBtn) {
+    connectWalletBtn.addEventListener("click", connectWallet);
+    console.log("Added event listener to connectWalletBtn");
+  } else {
+    console.warn("connectWalletBtn element not found");
+  }
+
+  if (buyTokensBtn) {
+    buyTokensBtn.addEventListener("click", buyTokens);
+    console.log("Added event listener to buyTokensBtn");
+  } else {
+    console.warn("buyTokensBtn element not found");
+  }
+
+  updateContractData();
+}
+
+// Function to detect mobile wallets
+function detectMobileWallets() {
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  const wallets = [];
+
+  if (isMobile) {
+    // Check for common mobile wallet apps
+    if (window.ethereum && window.ethereum.isMetaMask) {
+      wallets.push('MetaMask');
+    }
+
+    // Check if we're in a wallet app's browser
+    const userAgent = navigator.userAgent.toLowerCase();
+    if (userAgent.includes('trust')) {
+      wallets.push('Trust Wallet');
+    } else if (userAgent.includes('binance')) {
+      wallets.push('Binance Wallet');
+    } else if (userAgent.includes('coinbase')) {
+      wallets.push('Coinbase Wallet');
+    }
+
+    console.log('Detected mobile wallets:', wallets);
+  }
+
+  return wallets;
 }
 
 async function connectWallet() {
@@ -80,8 +194,31 @@ async function connectWallet() {
   }
 
   try {
-    const instance = await web3Modal.connect();
-    console.log("Wallet instance:", instance);
+    // Check if web3Modal is initialized
+    if (!web3Modal) {
+      throw new Error("Web3Modal not initialized. Please refresh the page.");
+    }
+
+    // Detect mobile wallets first
+    const mobileWallets = detectMobileWallets();
+    console.log("Mobile wallet detection:", mobileWallets);
+
+    // Try Web3Modal first
+    let instance;
+    try {
+      instance = await web3Modal.connect();
+      console.log("Wallet instance:", instance);
+    } catch (error) {
+      console.warn("Web3Modal failed, trying direct connection:", error);
+
+      // Fallback: try direct connection to injected provider
+      if (window.ethereum) {
+        instance = window.ethereum;
+        console.log("Using direct ethereum provider");
+      } else {
+        throw new Error("No wallet provider available");
+      }
+    }
 
     // Check if instance has request method (EIP-1193 provider)
     if (typeof instance.request === "function") {
@@ -184,10 +321,15 @@ async function connectWallet() {
       }, 500));
     }
 
-
   } catch (error) {
     console.error("Wallet connection failed:", error);
-    alert("Failed to connect wallet: " + error.message);
+
+    // Handle specific WalletConnect v1 deprecation error
+    if (error.message && error.message.includes("unsupported")) {
+      alert("This wallet connection method is no longer supported. Please try using MetaMask, Trust Wallet, or another supported wallet app.");
+    } else {
+      alert("Failed to connect wallet: " + error.message);
+    }
   } finally {
     // Restore button state
     if (connectWalletBtn) {
@@ -520,5 +662,21 @@ window.addEventListener("load", () => {
     disconnectWalletBtn.addEventListener("click", async () => {
       await disconnectWallet();
     });
+  }
+
+  // Add mobile-specific wallet connection improvements
+  if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+    console.log("Mobile device detected - using mobile-optimized wallet connection");
+
+    // Add touch event listeners for better mobile experience
+    const connectWalletBtn = document.getElementById("connectWalletBtn");
+    if (connectWalletBtn) {
+      connectWalletBtn.addEventListener("touchstart", function() {
+        this.style.transform = "scale(0.95)";
+      });
+      connectWalletBtn.addEventListener("touchend", function() {
+        this.style.transform = "scale(1)";
+      });
+    }
   }
 });
