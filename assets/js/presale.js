@@ -194,15 +194,15 @@ async function connectWallet() {
   }
 
   try {
-    // Try Simple Wallet Manager first (reliable approach)
-    if (window.simpleWalletManager) {
-      console.log("Using Simple Wallet Manager");
-      await window.simpleWalletManager.connect();
+    // Try Mobile Wallet Manager first (mobile-optimized approach)
+    if (window.mobileWalletManager) {
+      console.log("Using Mobile Wallet Manager");
+      await window.mobileWalletManager.connect();
       return;
     }
 
     // Fallback to original Web3Modal
-    console.log("Simple Wallet Manager not available, using fallback");
+    console.log("Mobile Wallet Manager not available, using fallback");
 
     // Check if web3Modal is initialized
     if (!web3Modal) {
@@ -445,10 +445,10 @@ async function buyTokens() {
 
 async function disconnectWallet() {
   try {
-    // Try Simple Wallet Manager first
-    if (window.simpleWalletManager) {
-      console.log("Using Simple Wallet Manager disconnect");
-      await window.simpleWalletManager.disconnect();
+    // Try Mobile Wallet Manager first
+    if (window.mobileWalletManager) {
+      console.log("Using Mobile Wallet Manager disconnect");
+      await window.mobileWalletManager.disconnect();
       return;
     }
 
