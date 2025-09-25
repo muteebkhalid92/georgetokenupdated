@@ -1,0 +1,14 @@
+/* Center images in the NFT swiper carousel */
+#nft-section .swiper-slide {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#nft-section .swiper-slide img {
+  max-width: 70%;
+  height: auto;
+  object-fit: contain;
+  border: 2px solid white;
+  border-radius: 8px;
+}
