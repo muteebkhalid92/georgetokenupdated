@@ -5336,6 +5336,7 @@ small,
 }
 .hero-3__img {
     display: none;
+    pointer-events: none; /* ensure underlying buttons remain clickable */
 }
 @media (min-width: 992px) {
     .hero-3__img {
@@ -5344,6 +5345,7 @@ small,
         left: 30%;
         bottom: 0;
         transform: translateX(-50%);
+        pointer-events: none; /* avoid intercepting clicks on links */
     }
 }
 @media (min-width: 1400px) {
