@@ -27,7 +27,7 @@ const modal = createWeb3Modal({
   ethersConfig: defaultConfig({ metadata }),
   chains: [bsc],  // use the SAME object
   projectId,
-  enableAnalytics: true,
+  enableAnalytics: false, // reduce overhead
   themeMode: 'dark'
 })
 
@@ -82,8 +82,17 @@ function App() {
   const buyTokensBtnRef = useRef(null);
   const bnbBalanceDisplayRef = useRef(null);
   const receivedInInputRef = useRef(null);
+  const statusElemRef = useRef(null);
 
   // --- small helpers ---
+  const setStatus = useCallback((message, level = 'info') => {
+    const el = statusElemRef.current || document.getElementById('walletStatus');
+    if (!el) return;
+    el.textContent = message || '';
+    el.classList.remove('text-success', 'text-warning', 'text-danger', 'd-none');
+    const map = { success: 'text-success', warning: 'text-warning', danger: 'text-danger', info: 'text-light' };
+    el.classList.add(map[level] || 'text-light');
+  }, []);
   const isMobile = () => {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
            (window.innerWidth <= 768 && window.innerHeight <= 1024);
@@ -116,10 +125,16 @@ function App() {
     }
   }, []);
 
-  // CoinGecko BNB price (fallback to fixed price on failure)
+  // CoinGecko BNB price with short timeout (fallback to fixed price on failure)
   const fetchBnbPrice = useCallback(async () => {
     try {
-      const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd');
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 1500);
+      const response = await fetch(
+        'https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd',
+        { signal: controller.signal }
+      );
+      clearTimeout(timeout);
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       const data = await response.json();
       if (data?.binancecoin?.usd) return data.binancecoin.usd;
@@ -130,7 +145,7 @@ function App() {
     }
   }, []);
 
-  // Try a list of public RPCs and return the first responsive URL (read-only use)
+  // Try multiple public RPCs concurrently and return the first responsive URL (read-only use)
   const tryMultipleRpcEndpoints = useCallback(async () => {
     const rpcEndpoints = [
       'https://bsc-dataseed.binance.org/',
@@ -145,25 +160,37 @@ function App() {
       'https://bsc-dataseed4.binance.org/'
     ];
 
-    for (const rpcUrl of rpcEndpoints) {
+    const timeoutMs = 1500;
+    const withTimeout = (promise, ms) => new Promise((resolve, reject) => {
+      const t = setTimeout(() => reject(new Error('timeout')), ms);
+      promise.then((v) => { clearTimeout(t); resolve(v); }).catch((e) => { clearTimeout(t); reject(e); });
+    });
+
+    const probes = rpcEndpoints.map((rpcUrl) => new Promise(async (resolve, reject) => {
       try {
         const testProvider = new ethers.providers.JsonRpcProvider(rpcUrl);
-        await testProvider.getBlockNumber(); // quick test
-        console.log(`RPC working: ${rpcUrl}`);
-        return rpcUrl;
-      } catch (err) {
-        console.warn(`RPC failed: ${rpcUrl}`, err);
-        continue;
+        await withTimeout(testProvider.getBlockNumber(), timeoutMs);
+        resolve(rpcUrl);
+      } catch (e) {
+        reject(e);
       }
+    }));
+
+    try {
+      const firstOk = await Promise.any(probes);
+      console.log(`RPC working: ${firstOk}`);
+      return firstOk;
+    } catch (e) {
+      console.warn('All RPC probes failed, using default');
+      return rpcEndpoints[0];
     }
-    throw new Error('All RPC endpoints failed');
   }, []);
 
   // Add BSC network helper (for UI button)
   const addBscNetwork = useCallback(async () => {
     const raw = window.ethereum;
     if (!raw) {
-      alert('Please install MetaMask or another Web3 wallet to continue.');
+      setStatus('Please install MetaMask or another Web3 wallet to continue.', 'warning');
       return;
     }
 
@@ -179,16 +206,16 @@ function App() {
           iconUrls: bsc.iconUrls
         }],
       });
-      alert('BSC network added (or already exists). Please switch to it in your wallet.');
+      setStatus('BSC network added (or already exists). Please switch to it in your wallet.', 'success');
     } catch (error) {
       console.error('Error adding BSC network:', error);
       if (error.code === 4001) {
-        alert('Network addition was cancelled by the user.');
+        setStatus('Network addition was cancelled by the user.', 'warning');
       } else {
-        alert('Failed to add BSC network automatically. Please add it manually in your wallet settings.');
+        setStatus('Failed to add BSC network automatically. Please add it manually in your wallet settings.', 'danger');
       }
     }
-  }, []);
+  }, [setStatus]);
 
   // Read-only contract data update (uses public RPCs, NOT the wallet provider)
   const updateContractData = useCallback(async () => {
@@ -251,7 +278,7 @@ function App() {
   // Switch-first-then-add helper (expects raw provider: e.g. window.ethereum or WalletConnect provider)
   const switchToBsc = useCallback(async (rawProvider) => {
     if (!rawProvider) {
-      alert('No wallet provider available to switch network.');
+      setStatus('No wallet provider available to switch network.', 'warning');
       return false;
     }
 
@@ -292,9 +319,9 @@ function App() {
         } catch (addErr) {
           console.error('Error adding then switching to BSC:', addErr);
           if (addErr.code === 4001) {
-            alert('Network addition was cancelled by the user.');
+            setStatus('Network addition was cancelled by the user.', 'warning');
           } else {
-            alert('Failed to add the BSC network automatically. Please add it manually in your wallet settings.');
+            setStatus('Failed to add the BSC network automatically. Please add it manually in your wallet settings.', 'danger');
           }
           return false;
         }
@@ -302,30 +329,23 @@ function App() {
 
       // If user rejected the switch
       if (switchError.code === 4001) {
-        if (isMobile()) {
-          alert('Please switch to BSC manually in MetaMask to continue.\n\n📱 MetaMask Mobile:\nOpen app → Tap the network at top → Select "BNB Smart Chain".');
-        } else {
-          alert('Please switch to BSC manually in your wallet to continue.');
-        }
+        const help = isMobile() ? 'Open MetaMask → tap network at top → choose "BNB Smart Chain".' : 'Please switch to BSC in your wallet.';
+        setStatus(help, 'warning');
         return false;
       }
 
       // Request already pending
       if (switchError.code === -32002) {
-        alert('Network switch request already pending in your wallet. Please check your wallet and accept the request.');
+        setStatus('Network switch request pending. Please approve in your wallet…', 'info');
         return false;
       }
 
       // Generic fallback
       console.error('Failed to switch network:', switchError);
-      if (isMobile()) {
-        alert('Unable to switch to BSC automatically. Please switch manually in your wallet and refresh this page.');
-      } else {
-        alert('Unable to switch to BSC. Please change to "BNB Smart Chain" in your wallet.');
-      }
+      setStatus('Unable to switch to BSC automatically. Please switch manually in your wallet.', 'danger');
       return false;
     }
-  }, []);
+  }, [setStatus]);
 
   // Update presale data at mount
   useEffect(() => {
@@ -338,104 +358,56 @@ function App() {
     disconnectWalletBtnRef.current = document.getElementById('disconnectWalletBtn');
     buyTokensBtnRef.current = document.getElementById('buyTokensBtn');
     bnbBalanceDisplayRef.current = document.getElementById('bnbBalanceDisplay');
+    statusElemRef.current = document.getElementById('walletStatus');
 
-    // Subscribe to modal provider updates
-    const unsubscribe = modal.subscribeProvider(async ({ provider: extProvider, isConnected: connected, address, chainId }) => {
-      // Reset state initially
-      setIsConnected(false);
-      setIsDataReady(false);
-      setSelectedAccount(null);
-      setBnbBalance("0");
-      setSigner(null);
-      setProvider(null);
-      setContract(null);
+    // Subscribe to modal provider updates (lightweight, no auto-switch; switch happens on buy)
+    const unsubscribe = modal.subscribeProvider(async ({ provider: extProvider, isConnected: connected, address }) => {
+      if (!connected || !extProvider || !address) {
+        setIsConnected(false);
+        setIsDataReady(false);
+        setSelectedAccount(null);
+        setBnbBalance("0");
+        setSigner(null);
+        setProvider(null);
+        setContract(null);
+        setStatus('', 'info');
+        try { if (window.__createSmoother) window.__createSmoother(); } catch (_) {}
+        return;
+      }
 
-      if (connected && extProvider && address && chainId != null) {
+      try {
         setIsConnected(true);
-
-        // Normalize chainId safely
-        const currentChainId = normalizeChainId(chainId);
-        console.log('subscribeProvider - chainId raw:', chainId, 'normalized:', currentChainId);
-
-        // If already on BSC
-        if (currentChainId === bsc.chainId) {
-          try {
-            const ethersProvider = new ethers.providers.Web3Provider(extProvider);
-            const newSigner = ethersProvider.getSigner();
-
-            // Test network connectivity using a public RPC or the provider itself
-            const networkOk = await testNetworkConnection(ethersProvider);
-            if (!networkOk) {
-              if (isMetaMaskMobile()) {
-                alert('Unable to connect to BSC network.\n\n📱 MetaMask Mobile: ensure BSC is selected, check connection, then refresh.');
-              } else if (isMobile()) {
-                alert('Unable to connect to BSC network. Please check your internet and that BSC is selected in your wallet.');
-              } else {
-                alert('Unable to connect to BSC network. Please check your internet connection.');
-              }
-              return;
-            }
-
-            setProvider(ethersProvider);
-            setSigner(newSigner);
-            setSelectedAccount(address);
-            setContract(new ethers.Contract(contractAddress, contractABI, newSigner));
-            await fetchBnbBalance(newSigner);
-            setIsDataReady(true);
-          } catch (err) {
-            console.error('Error setting up provider/signer on BSC:', err);
-            if (isMetaMaskMobile()) {
-              alert('Error connecting wallet on MetaMask Mobile. Try closing and reopening the app, then reconnect.');
-            } else {
-              alert('Error connecting wallet. Try reconnecting.');
-            }
-          }
-        } else {
-          // Wrong chain - attempt to switch (switch first, add if needed)
-          try {
-            const rawProvider = extProvider || window.ethereum;
-            const switched = await switchToBsc(rawProvider);
-
-            if (switched) {
-              // confirm chain changed
-              try {
-                const newChainIdHex = await (rawProvider.request ? rawProvider.request({ method: 'eth_chainId' }) : null);
-                const newChainId = normalizeChainId(newChainIdHex);
-                if (newChainId === bsc.chainId) {
-                  // initialize
-                  const ethersProvider = new ethers.providers.Web3Provider(rawProvider);
-                  const newSigner = ethersProvider.getSigner();
-                  setProvider(ethersProvider);
-                  setSigner(newSigner);
-                  setSelectedAccount(address);
-                  setContract(new ethers.Contract(contractAddress, contractABI, newSigner));
-                  await fetchBnbBalance(newSigner);
-                  setIsDataReady(true);
-                } else {
-                  // if switching didn't reflect, fallback to instructing user
-                  if (isMetaMaskMobile()) {
-                    alert('Please switch to BSC network manually in MetaMask and refresh this page.');
-                  } else if (isMobile()) {
-                    alert('Please switch to BSC network manually in your wallet and refresh this page.');
-                  } else {
-                    alert('Please switch to BSC network in your wallet and refresh the page.');
-                  }
-                }
-              } catch (confirmErr) {
-                console.warn('Could not confirm chain after switch attempt', confirmErr);
-              }
-            }
-          } catch (err) {
-            console.error('Automatic switch attempt failed:', err);
-          }
-        }
+        const ethersProvider = new ethers.providers.Web3Provider(extProvider);
+        const newSigner = ethersProvider.getSigner();
+        setProvider(ethersProvider);
+        setSigner(newSigner);
+        setSelectedAccount(address);
+        setContract(new ethers.Contract(contractAddress, contractABI, newSigner));
+        await fetchBnbBalance(newSigner);
+        setIsDataReady(true);
+        setStatus('Wallet connected', 'success');
+        try { if (window.__createSmoother) window.__createSmoother(); } catch (_) {}
+      } catch (err) {
+        console.error('Error setting up provider/signer:', err);
+        setStatus('Error connecting wallet. Try reconnecting.', 'danger');
       }
     });
 
+    // Pause/resume scroll smoother when Web3Modal opens/closes (if API available)
+    let unsubscribeModal;
+    try {
+      if (typeof modal.subscribeModal === 'function') {
+        unsubscribeModal = modal.subscribeModal(({ open }) => {
+          try { if (open) { if (window.__killSmoother) window.__killSmoother(); } else { if (window.__createSmoother) window.__createSmoother(); } } catch (_) {}
+        });
+      }
+    } catch (_) {}
+
     return () => {
       unsubscribe();
+      if (typeof unsubscribeModal === 'function') unsubscribeModal();
     };
-  }, [fetchBnbBalance, testNetworkConnection, updateContractData, switchToBsc]); // keep deps necessary
+  }, [fetchBnbBalance, updateContractData]); // keep deps necessary
 
   // Handle pay-in input -> update received tokens display
   const handlePayInChange = useCallback(() => {
@@ -451,23 +423,23 @@ function App() {
   // Buy tokens (checks chain before sending)
   const buyTokens = useCallback(async () => {
     if (!isDataReady || !contract || !signer || !selectedAccount) {
-      alert("Please connect your wallet first.");
+      setStatus('Please connect your wallet first.', 'warning');
       return;
     }
 
     const payInValue = parseFloat(payInInputRef.current?.value);
     if (isNaN(payInValue) || payInValue <= 0) {
-      alert("Please enter a valid amount to pay.");
+      setStatus('Please enter a valid amount to pay.', 'warning');
       return;
     }
 
     if (payInValue < minBuy || payInValue > maxBuy) {
-      alert(`Purchase amount must be between ${minBuy} and ${maxBuy} BNB.`);
+      setStatus(`Purchase amount must be between ${minBuy} and ${maxBuy} BNB.`, 'warning');
       return;
     }
 
     if (parseFloat(bnbBalance) < payInValue) {
-      alert("Insufficient BNB balance to complete this transaction.");
+      setStatus('Insufficient BNB balance to complete this transaction.', 'danger');
       return;
     }
 
@@ -485,6 +457,7 @@ function App() {
       if (!networkOk) {
         // Attempt to switch; use the raw provider if available
         const rawProvider = (currentProvider && currentProvider.provider) || window.ethereum;
+        setStatus('Switching to BSC… approve in your wallet.', 'info');
         const switched = await switchToBsc(rawProvider);
         if (!switched) {
           setIsBuying(false);
@@ -498,9 +471,9 @@ function App() {
         const txContract = new ethers.Contract(contractAddress, contractABI, newSigner);
 
         const tx = await txContract.buyTokens(selectedAccount, { value: ethers.utils.parseEther(payInValue.toString()) });
-        alert("Transaction sent. Waiting for confirmation...");
+        setStatus('Transaction sent. Waiting for confirmation…', 'info');
         await tx.wait();
-        alert("Purchase successful!");
+        setStatus('Purchase successful!', 'success');
         // update UI/state
         setProvider(ethersProvider);
         setSigner(newSigner);
@@ -515,9 +488,9 @@ function App() {
 
       // Already on correct network: use existing contract instance (with signer)
       const tx = await contract.buyTokens(selectedAccount, { value: ethers.utils.parseEther(payInValue.toString()) });
-      alert("Transaction sent. Waiting for confirmation...");
+      setStatus('Transaction sent. Waiting for confirmation…', 'info');
       await tx.wait();
-      alert("Purchase successful!");
+      setStatus('Purchase successful!', 'success');
       await updateContractData();
       await fetchBnbBalance(signer);
       if (payInInputRef.current) payInInputRef.current.value = "";
@@ -532,11 +505,11 @@ function App() {
       } else {
         errorMessage += (error.data?.message || error.reason || error.message || String(error));
       }
-      alert(errorMessage);
+      setStatus(errorMessage, 'danger');
     } finally {
       setIsBuying(false);
     }
-  }, [isDataReady, contract, signer, selectedAccount, bnbBalance, fetchBnbBalance, updateContractData, provider, switchToBsc]);
+  }, [isDataReady, contract, signer, selectedAccount, bnbBalance, fetchBnbBalance, updateContractData, provider, switchToBsc, setStatus]);
 
   // UI updates based on connection state
   useEffect(() => {
@@ -576,8 +549,39 @@ function App() {
     const disconnectBtn = disconnectWalletBtnRef.current;
     const buyBtn = buyTokensBtnRef.current;
 
-    const openModal = () => modal.open();
-    const disconnectModal = () => modal.disconnect();
+    let modalCloseCleanup = null;
+    const killSmoother = () => { try { if (window.__killSmoother) window.__killSmoother(); } catch (_) {} };
+    const recreateSmoother = () => { try { if (window.__createSmoother) window.__createSmoother(); } catch (_) {} };
+
+    const watchWeb3ModalClose = (onClose) => {
+      let active = true;
+      const cleanup = () => {
+        active = false;
+        try { observer.disconnect(); } catch (_) {}
+        if (interval) clearInterval(interval);
+      };
+      const observer = new MutationObserver(() => {
+        if (!active) return;
+        const el = document.querySelector('w3m-modal');
+        if (!el) { cleanup(); onClose?.(); }
+      });
+      try { observer.observe(document.documentElement, { childList: true, subtree: true }); } catch (_) {}
+      const interval = setInterval(() => {
+        if (!active) return;
+        const el = document.querySelector('w3m-modal');
+        if (!el) { cleanup(); onClose?.(); }
+      }, 1500);
+      return cleanup;
+    };
+
+    const openModal = () => {
+      killSmoother();
+      try { if (modalCloseCleanup) { modalCloseCleanup(); modalCloseCleanup = null; } } catch (_) {}
+      modal.open();
+      // Ensure resume even if user cancels/escapes without connecting
+      modalCloseCleanup = watchWeb3ModalClose(() => recreateSmoother());
+    };
+    const disconnectModal = () => { modal.disconnect(); recreateSmoother(); if (modalCloseCleanup) { modalCloseCleanup(); modalCloseCleanup = null; } };
 
     if (payIn) payIn.addEventListener('input', handlePayInChange);
     if (connectBtn) connectBtn.addEventListener('click', openModal);
@@ -591,6 +595,7 @@ function App() {
       if (addBscBtn) addBscBtn.removeEventListener('click', addBscNetwork);
       if (disconnectBtn) disconnectBtn.removeEventListener('click', disconnectModal);
       if (buyBtn) buyBtn.removeEventListener('click', buyTokens);
+      if (modalCloseCleanup) { try { modalCloseCleanup(); } catch (_) {} }
     };
   }, [handlePayInChange, buyTokens, addBscNetwork]);
 

@@ -296,14 +296,26 @@ document.addEventListener("DOMContentLoaded", function () {
   /**
    * Initialize ScrollSmoother
    */
-  ScrollSmoother.create({
-    wrapper: "#smooth-wrapper",
-    content: "#smooth-content",
-    smooth: 1.5,
-    effects: true,
-    normalizeScroll: true,
-    smoothTouch: 0.1
-  });
+  function __createSmoother() {
+    try { const inst = window.ScrollSmoother && window.ScrollSmoother.get && window.ScrollSmoother.get(); if (inst) inst.kill(); } catch (e) {}
+    try {
+      const inst = ScrollSmoother.create({
+        wrapper: "#smooth-wrapper",
+        content: "#smooth-content",
+        smooth: 1.5,
+        effects: true,
+        normalizeScroll: true,
+        smoothTouch: 0.1
+      });
+      try { window.__smoother = inst; } catch (_) {}
+      return inst;
+    } catch (_) { return null; }
+  }
+  const __smoother = __createSmoother();
+  try {
+    window.__createSmoother = __createSmoother;
+    window.__killSmoother = function(){ try { const inst = window.ScrollSmoother && window.ScrollSmoother.get && window.ScrollSmoother.get(); if (inst) inst.kill(); } catch (_) {} };
+  } catch (e) {}
 /**
  * Animation
  */
