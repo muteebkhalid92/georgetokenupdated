@@ -32,7 +32,7 @@ const modal = createWeb3Modal({
 })
 
 // --- Contract Configuration ---
-const contractAddress = "0x1Fe716F572B6DD5a92379E76949c0F951821BB18";
+const contractAddress = "0x77A85095060d75a7B3A34617b32b57b661890B0a";
 const contractABI = [
   {"inputs":[{"internalType":"uint256","name":"_rate","type":"uint256"},{"internalType":"contract IST20","name":"_token","type":"address"},{"internalType":"uint256","name":"_max","type":"uint256"}],"stateMutability":"nonpayable","type":"constructor"},
   {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},
@@ -56,7 +56,7 @@ const contractABI = [
 ];
 
 const minBuy = 0.01;
-const maxBuy = 1;
+const maxBuy = 5;
 
 function App() {
   // --- React state ---
@@ -70,7 +70,7 @@ function App() {
     rate: "0",
     usdtRaisedText: "Loading...",
     percentage: 0,
-    tokenPriceUSD: 0.015
+    tokenPriceUSD: 0.001
   });
   const [isBuying, setIsBuying] = useState(false);
   const [isDataReady, setIsDataReady] = useState(false);
@@ -233,7 +233,7 @@ function App() {
       // format values
       const ratePerBnb = parseFloat(ethers.utils.formatUnits(rate, 18)).toFixed(0);
       const bnbRaised = parseFloat(ethers.utils.formatEther(weiRaised));
-      const fixedBnbGoal = 1000;
+      const fixedBnbGoal = 250;
       const totalGoal = fixedBnbGoal * bnbPrice;
       const usdtRaised = bnbRaised * bnbPrice;
       const percentage = Math.min((usdtRaised / totalGoal) * 100, 100);
@@ -254,7 +254,7 @@ function App() {
         rate: ratePerBnb,
         usdtRaisedText: usdtText,
         percentage: percentage.toFixed(1),
-        tokenPriceUSD: 0.015
+        tokenPriceUSD: 0.001
       });
     } catch (error) {
       console.error("Failed to fetch contract data:", error);

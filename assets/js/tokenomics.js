@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const data = {
     labels: ['Locked', 'Staking', 'Pre-sale', 'Private Sale', ' Liquidity', 'Team', 'CEX Listings'],
     datasets: [{
-      data: [80, 10, 5, 2, 1, 1, 1],
+      data: [50, 10, 25, 3, 5, 2, 5],
       backgroundColor: [
         '#d9f71f',
         '#4db8ff',
