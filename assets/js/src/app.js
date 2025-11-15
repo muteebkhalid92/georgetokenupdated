@@ -55,7 +55,7 @@ const contractABI = [
   {"stateMutability":"payable","type":"receive"}
 ];
 
-const minBuy = 0.01;
+const minBuy = 0.005;
 const maxBuy = 5;
 
 function App() {
@@ -141,7 +141,7 @@ function App() {
       throw new Error("Invalid response");
     } catch (error) {
       console.warn("Failed to fetch BNB price, using fallback:", error);
-      return 750; // fallback
+      return 900; // fallback
     }
   }, []);
 
